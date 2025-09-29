@@ -23,6 +23,7 @@ class EmailClassification(models.Model):
     )
     original_text = models.TextField()
     ia_suggestion_text = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     def __str__(self):
         return f"{self.pk} - {self.classification} - {self.priority}"

@@ -1,4 +1,5 @@
-from rest_framework import viewsets, response, status, serializers
+from rest_framework import viewsets, response, status
+from rest_framework.decorators import action
 from .models import EmailClassification
 from .serializers import EmailClassificationSerializer
 from ia_email_classifier import IaEmailClassifier
@@ -42,4 +43,48 @@ class EmailClassificationView(viewsets.ModelViewSet):
         serializer.save()
 
         return response.Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    @action(methods=['GET'], detail=False, url_path="get-summarize")
+    def get_summarize(self, request):
+        queryset = self.get_queryset()
+        email_count = queryset.count()
+        productive_percentage = queryset.filter(classification=1).count()
+        productive_percentage = int(round((productive_percentage / email_count * 100),0))
+        hight_priority_count = queryset.filter(priority=1).count()
+        medium_priority_count = queryset.filter(priority=2).count()
+        low_priority_count = queryset.filter(priority=3).count()
+
+        data = [
+            {
+                "title": "Emails Analisados",
+                "value": email_count,
+                "icon": "faEnvelope",
+                "color": "black"
+            },
+            {
+                "title": "Taxa de Produtivos",
+                "value": f"{productive_percentage}%",
+                "icon": "faArrowUp",
+                "color": "black"
+            },
+            {
+                "title": "Emails de Alta Prioridade",
+                "value": hight_priority_count,
+                "icon": "faTriangleExclamation",
+                "color": "red"
+            },
+            {
+                "title": "Emails de Média Prioridade",
+                "value": medium_priority_count,
+                "icon": "faTriangleExclamation",
+                "color": "#D19200"
+            },
+            {
+                "title": "Emails de Baixa Prioridade",
+                "value": low_priority_count,
+                "icon": "faTriangleExclamation",
+                "color": "#24821F"
+            },
+        ]
+        return response.Response(data)
 

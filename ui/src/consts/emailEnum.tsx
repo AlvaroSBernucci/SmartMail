@@ -1,0 +1,4 @@
+export const EMAIL_PRIORITY = {
+  PRODUCTIVE: 1,
+  UNPRODUCTIVE: 2,
+};

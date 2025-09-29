@@ -1,30 +1,17 @@
 import React, { useState } from 'react';
 import { api } from '../../utils/axios';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-function EmailForm() {
+function EmailForm({ uploadFile, fetchData }) {
   const [email, setEmail] = useState('');
   const [file, setFile] = useState<File | null>(null);
-
-  // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   console.log(email);
-  //   console.log(file);
-  //   try {
-  //     const resp = await api.post(`api/v1/emails/`, {
-  //       original_text: email,
-  //       file: file,
-  //       upload: true,
-  //     });
-  //     console.log(resp.data);
-  //   } catch (err) {
-  //     console.error(err);
-  //   }
-  // };
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
 
-    // Verificações básicas:
     if (!email && !file) {
       alert('Você precisa preencher o texto OU enviar um arquivo.');
       return;
@@ -32,15 +19,13 @@ function EmailForm() {
 
     const formData = new FormData();
 
-    // Se o usuário digitou texto, adicionamos ele
     if (email) {
       formData.append('original_text', email);
     }
 
-    // Se o usuário fez upload, adicionamos o arquivo
     if (file) {
       formData.append('file', file);
-      formData.append('upload', 'true'); // apenas para o backend saber que veio arquivo
+      formData.append('upload', 'true');
     }
 
     try {
@@ -50,8 +35,12 @@ function EmailForm() {
         },
       });
       console.log(resp.data);
+      fetchData();
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
+      setEmail('');
     }
   };
 
@@ -62,21 +51,42 @@ function EmailForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
+    <form onSubmit={handleSubmit} className="email-form grid justify-center">
+      {!uploadFile ? (
         <textarea
           name="email"
-          rows={5}
-          cols={40}
+          className="p-3 border-2 rounded-lg border-zinc-400 focus:rounded-lg w-200 h-48"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           placeholder="Coloque o conteúdo do email que deseja classificar"
         ></textarea>
-      </div>
-      <div>
-        <input type="file" accept=".txt, .pdf" onChange={handleFileChange} />
-      </div>
-      <button type="submit">Enviar</button>
+      ) : (
+        <div className="p-3 border-2 rounded-lg border-zinc-400 w-200 h-48">
+          <input
+            type="file"
+            id="file-upload"
+            accept=".txt, .pdf"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+          <label
+            htmlFor="file-upload"
+            className="flex items-center justify-center w-full h-full cursor-pointer text-zinc-500"
+          >
+            <FontAwesomeIcon icon={faDownload} className="mr-2" />
+            Clique para selecionar o arquivo
+          </label>
+        </div>
+      )}
+      <button
+        type="submit"
+        disabled={loading}
+        className={`w-full p-3 text-sm bg-gray-400 text-white rounded-lg mt-2
+    ${loading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
+  `}
+      >
+        {loading ? 'Carregando...' : 'Analisar Email'}
+      </button>
     </form>
   );
 }
