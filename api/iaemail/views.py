@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from utils.upload_file import upload_file
 
 class EmailClassificationView(viewsets.ModelViewSet):
-    queryset = EmailClassification.objects.all()
+    queryset = EmailClassification.objects.all().order_by('-created_at')
     serializer_class = EmailClassificationSerializer
     permission_classes = [IsAuthenticated]
 

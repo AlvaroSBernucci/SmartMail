@@ -82,7 +82,9 @@ function EmailForm({ uploadFile, fetchData }: EmailFormInterface) {
             className="flex items-center justify-center w-full h-full cursor-pointer text-zinc-500"
           >
             <FontAwesomeIcon icon={faDownload} className="mr-2" />
-            {file ? file.name : 'Clique para selecionar o arquivo'}
+            {file
+              ? file.name
+              : 'Clique para selecionar o arquivo (fomato .txt ou .pdf)'}
           </label>
         </div>
       )}
