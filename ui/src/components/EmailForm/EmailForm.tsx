@@ -2,11 +2,15 @@ import React, { useState } from 'react';
 import { api } from '../../utils/axios';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useNavigate } from 'react-router-dom';
+import type { EmailFormInterface } from './EmailForm.types';
 
-function EmailForm({ uploadFile, fetchData }) {
+function EmailForm({ uploadFile, fetchData }: EmailFormInterface) {
   const [email, setEmail] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -14,6 +18,7 @@ function EmailForm({ uploadFile, fetchData }) {
 
     if (!email && !file) {
       alert('Você precisa preencher o texto OU enviar um arquivo.');
+      setLoading(false);
       return;
     }
 
@@ -28,14 +33,17 @@ function EmailForm({ uploadFile, fetchData }) {
       formData.append('upload', 'true');
     }
 
+    const controller = new AbortController();
+    const signal = controller.signal;
+
     try {
-      const resp = await api.post(`api/v1/emails/`, formData, {
+      await api.post(`api/v1/emails/`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      console.log(resp.data);
-      fetchData();
+      fetchData(signal);
+      navigate('/history');
     } catch (err) {
       console.error(err);
     } finally {
@@ -74,7 +82,7 @@ function EmailForm({ uploadFile, fetchData }) {
             className="flex items-center justify-center w-full h-full cursor-pointer text-zinc-500"
           >
             <FontAwesomeIcon icon={faDownload} className="mr-2" />
-            Clique para selecionar o arquivo
+            {file ? file.name : 'Clique para selecionar o arquivo'}
           </label>
         </div>
       )}

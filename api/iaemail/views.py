@@ -3,11 +3,16 @@ from rest_framework.decorators import action
 from .models import EmailClassification
 from .serializers import EmailClassificationSerializer
 from ia_email_classifier import IaEmailClassifier
+from rest_framework.permissions import IsAuthenticated
 from utils.upload_file import upload_file
 
 class EmailClassificationView(viewsets.ModelViewSet):
     queryset = EmailClassification.objects.all()
     serializer_class = EmailClassificationSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return super().get_queryset().filter(user=self.request.user)
 
     def create(self, request):
         file_upload = request.data.get("upload")
@@ -40,9 +45,13 @@ class EmailClassificationView(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
+        serializer.save(user=self.request.user)
         serializer.save()
 
         return response.Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+
+
     
     @action(methods=['GET'], detail=False, url_path="get-summarize")
     def get_summarize(self, request):

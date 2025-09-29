@@ -1,16 +1,8 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
-import { EMAIL_PRIORITY } from '../../consts/emailEnum';
-
-interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title: string;
-  originalText: string;
-  suggestionText: string;
-  priorityLabel: number;
-}
+import { EMAIL_CLASSIFICATION } from '../../consts/emailEnum';
+import type { ModalInterface } from './SuggestionModal.types';
 
 export default function SuggestionModal({
   isOpen,
@@ -19,7 +11,8 @@ export default function SuggestionModal({
   originalText,
   suggestionText,
   priorityLabel,
-}: ModalProps) {
+  priority,
+}: ModalInterface) {
   if (!isOpen) return null;
 
   return (
@@ -31,7 +24,6 @@ export default function SuggestionModal({
         className="bg-white rounded-lg shadow-lg w-11/12 max-w-2xl p-6 relative"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Botão de fechar */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
@@ -46,7 +38,7 @@ export default function SuggestionModal({
           </h2>
           <span
             className={`inline-flex items-center rounded-md bg-red-400/10 px-2 py-1 text-xs font-medium inset-ring inset-ring-red-400/20 mr-6 ${
-              priorityLabel === EMAIL_PRIORITY.PRODUCTIVE
+              priority === EMAIL_CLASSIFICATION.PRODUCTIVE
                 ? 'text-green-400'
                 : 'text-yellow-400'
             }`}

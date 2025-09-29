@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import type { StatsCardInterface } from './StatsCard.types';
 
-function StatsCard({ title, value, icon, color }) {
+function StatsCard({ title, value, icon, color }: StatsCardInterface) {
   return (
     <div className="grid text-start gap-3">
       <p className="text-xs font-bold text-zinc-400">{title}</p>

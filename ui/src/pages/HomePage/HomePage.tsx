@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import EmailForm from '../../components/EmailForm/EmailForm';
-import { api } from '../../utils/axios';
 import StatsCard from '../../components/StatsCard/StatsCard';
 import { faEnvelope } from '@fortawesome/free-regular-svg-icons';
 import { faArrowUp } from '@fortawesome/free-solid-svg-icons';
@@ -10,6 +9,7 @@ import { faQuoteLeft } from '@fortawesome/free-solid-svg-icons';
 import { faFile } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import useAxios from '../../hooks/useAxios';
+import type { SummarizeInterface } from './HomePage.types';
 
 const icons = {
   faEnvelope: faEnvelope,
@@ -20,7 +20,9 @@ const icons = {
 function HomePage() {
   const [uploadFile, setUploadFile] = useState(false);
 
-  const { data, fetchData } = useAxios(`api/v1/emails/get-summarize`);
+  const { data: emails, fetchData } = useAxios<SummarizeInterface[]>(
+    `api/v1/emails/get-summarize`
+  );
 
   return (
     <div className="min-h-screen bg-gradient-background">
@@ -34,12 +36,13 @@ function HomePage() {
           </p>
         </div>
         <div className="flex justify-center gap-15">
-          {data &&
-            data.map((item) => (
+          {emails &&
+            emails.map((item, index) => (
               <StatsCard
+                key={index}
                 title={item.title}
                 value={item.value}
-                icon={icons[item.icon]}
+                icon={icons[item.icon as keyof typeof icons]}
                 color={item.color}
               />
             ))}

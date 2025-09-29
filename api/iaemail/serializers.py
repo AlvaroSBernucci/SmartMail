@@ -4,7 +4,7 @@ from .models import EmailClassification
 class EmailClassificationSerializer(serializers.ModelSerializer):
     classification_label = serializers.CharField(source='get_classification_display', read_only=True)
     priority_label = serializers.CharField(source='get_priority_display', read_only=True)
-    created_at = serializers.DateTimeField(format="%d/%m/%y")
+    created_at = serializers.DateTimeField(format="%d/%m/%y", read_only=True)
     
     class Meta:
         model = EmailClassification

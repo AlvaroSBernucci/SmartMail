@@ -1,4 +1,7 @@
 from django.db import models
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class EmailClassification(models.Model):
     class ClassificationChoices(models.IntegerChoices):
@@ -9,7 +12,7 @@ class EmailClassification(models.Model):
         HIGHT = 1, "Alta prioridade"
         MEDIUM = 2, "Média prioridade"
         LOW = 3, "Baixa prioridade"
-        NONE = 0, 'N/A'
+        NONE = 0, "N/A"
 
     classification = models.IntegerField(
         choices=ClassificationChoices.choices,
@@ -24,6 +27,17 @@ class EmailClassification(models.Model):
     original_text = models.TextField()
     ia_suggestion_text = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="email_classifications",
+        null=True,
+        blank=True 
+    )
 
     def __str__(self):
-        return f"{self.pk} - {self.classification} - {self.priority}"
+        classification_label = self.get_classification_display() if self.classification is not None else "N/A"
+        priority_label = self.get_priority_display() if self.priority is not None else "N/A"
+        return f"{classification_label} - {priority_label}"
+

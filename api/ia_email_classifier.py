@@ -1,15 +1,15 @@
 import os
-from openai import OpenAI
 import json
-
+import string
+from openai import OpenAI
 
 class IaEmailClassifier:
-    def __init__(self, base_url, model, email):
+    def __init__(self, base_url: str, model: str, email: str):
         self.email = email
         self.base_url = base_url
         self.model = model
         self.api_key = os.getenv("HL_TOKEN")
-        self.client = None 
+        self.client = None
         self._create_client()
 
     def _create_client(self):
@@ -20,25 +20,55 @@ class IaEmailClassifier:
             api_key=self.api_key,
         )
 
-    def _build_prompt(self):
-        return f"""Você é uma inteligência artificial especializada em processamento de linguagem natural, projetada para analisar emails e fornecer classificações e respostas automáticas. Receba o texto de um email como entrada e siga estas instruções:
-        1. Classifique o email em uma das duas categorias: "Produtivo (1)" (se requerir ação ou resposta específica, como solicitações de suporte, atualizações de casos ou dúvidas sobre sistemas) ou "Improdutivo (2)" (se não necessitar de ação imediata, como mensagens de felicitações ou agradecimentos).
-        2. Para emails classificados como "Produtivo", determine uma prioridade de resposta: "Alta prioridade (1)" para casos urgentes, "Média prioridade (2)" para questões moderadas, ou "Baixa prioridade (3)" para tarefas menos críticas. Para "Improdutivo", defina "priority" como 0.
-        3. Mantenha o "original_text" como o texto completo do email fornecido.
-        4. Gere uma "ia_suggestion_text" apropriada baseada na classificação e, se aplicável, na prioridade. A resposta deve ser clara, profissional e adaptada ao contexto do email.
+    def _preprocess_email(self, email: str) -> str:
+        stop_words = {
+            "de", "a", "o", "e", "para", "com", "um", "uma", "os", "as",
+            "dos", "das", "no", "na", "nos", "nas", "por", "pelo", "pela",
+            "que", "se", "em", "ao", "à"
+        }
 
-        Retorne o resultado exclusivamente no seguinte formato JSON:
-        {{
-            "classification": "1",
-            "priority": "1",
-            "original_text": "conteudo original do e-mail",
-            "ia_suggestion_text": "resposta sugerida pela IA"
-        }}
+        def simple_stem(word: str) -> str:
+            suffixes = ["ando", "endo", "ar", "er", "ir", "s", "mente"]
+            for suf in suffixes:
+                if word.endswith(suf):
+                    return word[:-len(suf)]
+            return word
 
-        Agora, analise o seguinte email e forneça a resposta no formato JSON especificado:
-        {self.email}"""
+        email = email.lower()
+        email = email.translate(str.maketrans("", "", string.punctuation))
+        tokens = [word for word in email.split() if word not in stop_words]
+        tokens = [simple_stem(word) for word in tokens]
+        return " ".join(tokens)
 
-    def get_answer(self):
+    def _build_prompt(self) -> str:
+        safe_email = self.email.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
+        processed_email = self._preprocess_email(self.email)
+
+        return f"""
+                Você é uma IA especializada em classificação de emails. Analise o email fornecido abaixo e retorne **apenas JSON válido**, sem explicações ou texto adicional.
+
+                Email para análise:
+                "{safe_email}"
+
+                Instruções:
+                1. Classifique o email em "Produtivo (1)" ou "Improdutivo (2)".
+                2. Para produtivo, determine a prioridade: "Alta (1)", "Média (2)" ou "Baixa (3)". Para improdutivo, prioridade = 0.
+                3. Mantenha "original_text" exatamente igual ao texto do email fornecido.
+                4. Gere "ia_suggestion_text" adequada à classificação e prioridade.
+
+                Formato do JSON esperado:
+                {{
+                    "classification": 1,
+                    "priority": 1,
+                    "original_text": "...",
+                    "ia_suggestion_text": "..."
+                }}
+
+                Analise o email pré-processado (para referência interna):
+                {processed_email}
+                """
+
+    def get_answer(self) -> dict:
         if not self.client:
             raise RuntimeError("Cliente não inicializado. Verifique a configuração.")
         
@@ -49,18 +79,10 @@ class IaEmailClassifier:
                     {"role": "system", "content": "Você é um assistente de classificação de emails."},
                     {"role": "user", "content": self._build_prompt()}
                 ],
-                max_tokens=200
+                max_tokens=400
             )
             answer = response.choices[0].message.content
             return json.loads(answer)
         except Exception as e:
             raise Exception(f"Erro ao consultar a IA: {str(e)}")
 
-if __name__ == "__main__":
-    base_url = "https://router.huggingface.co/v1"
-    model = "moonshotai/Kimi-K2-Instruct-0905"
-    email = "Prezado suporte, gostaria de saber o status do meu caso #123. Obrigado!"
-    
-    classifier = IaEmailClassifier(base_url, model, email)
-    result = classifier.get_answer()
-    print(result)
