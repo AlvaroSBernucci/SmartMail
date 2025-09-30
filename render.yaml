@@ -1,0 +1,33 @@
+# render.yaml
+
+# Serviço do back-end
+services:
+  - type: web
+    name: smartmail-api
+    env: python
+    plan: free
+    branch: master
+    rootDir: api
+    buildCommand: pip install -r requirements.txt && python manage.py migrate
+    startCommand: gunicorn core.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: ALLOWED_HOSTS
+      - key: SECRET_KEY
+      - key: HL_TOKEN
+
+# Serviço do front-end
+  - type: web
+    name: smartmail-frontend
+    env: static
+    plan: free
+    branch: master
+    rootDir: ui 
+    buildCommand: npm install && npm run build
+
+
+databases:
+  - name: smartmail-db
+    databaseName: smartmail
+    user: admin
+    password: senha123
+    plan: free
