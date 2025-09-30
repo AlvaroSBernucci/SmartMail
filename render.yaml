@@ -10,12 +10,8 @@ services:
     buildCommand: pip install -r requirements.txt && python manage.py migrate
     startCommand: gunicorn core.wsgi:application --bind 0.0.0.0:$PORT
     envVars:
-      - key: ALLOWED_HOSTS
-        fromGroup: env
-      - key: SECRET_KEY
-        fromGroup: env
-      - key: HL_TOKEN
-        fromGroup: env
+    - fromGroup: env
+    
   - type: web
     name: smartmail-frontend
     env: static
