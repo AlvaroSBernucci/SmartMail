@@ -10,7 +10,7 @@ function Header() {
 
   const handleLogout = () => {
     clearToken();
-    window.location.href = '/login';
+    window.location.href = '/';
   };
 
   useEffect(() => {
