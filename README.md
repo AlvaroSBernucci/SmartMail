@@ -1,57 +1,47 @@
-### SmartMail — Case Prático AutoU
+# SmartMail — AutoU Case Study
+SmartMail is a web application that uses AI to automatically classify emails as Productive or Non-Productive and suggest appropriate responses, helping teams that receive a high volume of messages save time.
 
-SmartMail é uma aplicação web que utiliza IA para classificar e-mails automaticamente em Produtivo ou Improdutivo e sugerir respostas adequadas, ajudando equipes que recebem grande volume de mensagens a economizar tempo.
-
----
-
-## Tecnologias utilizadas
-
-**Backend**
-- Python,
-- Django,
+## Technologies Used
+### Backend
+- Python
+- Django
 - Django REST Framework
-- Autenticação: JWT (djangorestframework-simplejwt)
+- Authentication: JWT (djangorestframework-simplejwt)
 - PyPDF2
 
-**Frontend**
+### Frontend
 - React
 - TypeScript
 - TailwindCSS
 
-
-**IA / API**
-- Hugging Face (via API), modelo usado (ex.: moonshotai/Kimi-K2-Instruct-0905)
+### AI / API
+- Hugging Face (via API), model used (e.g., moonshotai/Kimi-K2-Instruct-0905)
 
 ---
 
-## Variáveis de ambiente
-
-**Backend (api)**
-
-- SECRET_KEY=chave_django_development
-- HL_TOKEN=hf_...seu_token_huggingface...
+## Environment Variables
+### Backend (api)
+- SECRET_KEY=django_development_key
+- HL_TOKEN=hf_...your_huggingface_token...
 - ALLOWED_HOSTS=localhost,127.0.0.1
 
-
-**Frontend (ui)**
-
+### Frontend (ui)
 - VITE_API_HOST=http://localhost:8000
 
 ---
 
-## Como rodar localmente
-
-### 1.Clone o respositório
+## How to Run Locally
+### 1. Clone the Repository
 - git clone https://github.com/AlvaroSBernucci/SmartMail.git
 - cd SmartMail
 
-### 2.Backend (Django Rest)
+### 2. Backend (Django REST)
 - cd api
 - pip install -r requirements.txt
 - python manage.py migrate
 - python manage.py runserver
-  
-**Criar virtualenv**
+
+**Create Virtual Environment**
 - python -m venv .venv
 - source .venv/bin/activate
 
@@ -59,104 +49,84 @@ SmartMail é uma aplicação web que utiliza IA para classificar e-mails automat
 - python -m venv .venv
 - .\.venv\Scripts\Activate.ps1
 
-
 - pip install -r requirements.txt
 
-### Definir variáveis de ambiente (exemplo Bash)
-- export SECRET_KEY="minha_secret_key_dev"
+**Set Environment Variables**
+- export SECRET_KEY="my_dev_secret_key"
 - export HL_TOKEN="hf_..."
 - export ALLOWED_HOSTS="localhost"
 
-### Migrações e superuser
+**Migrations and Superuser**
 - python manage.py migrate
 - python manage.py createsuperuser
 
-### Rodar servidor de desenvolvimento
+**Run Development Server**
 - python manage.py runserver 0.0.0.0:8000
 
-### O backend ficará disponível em http://localhost:8000.
+The backend will be available at http://localhost:8000.
 
-### 3.Frontend (React + Vite)
+### 3. Frontend (React + Vite)
 - cd ui
 - npm install
-# opcional: criar .env com VITE_API_HOST=http://localhost:8000
+***Optional: create .env with VITE_API_HOST=http://localhost:8000***
 - npm run dev
 
-O Vite exibirá a URL (ex.: http://localhost:5173) — abra no navegador.
-
---- 
-
-
-# Fluxo de uso (resumido)
-
-Acesse o frontend.
-
-(Opcional) Faça login com o superuser criado.
-
-Cole o texto do e-mail ou faça upload de um .txt / .pdf.
-
-Clique em Analisar — o backend irá:
-
-Extrair e pré-processar o texto (remoção de stopwords, limpeza, stemming simples);
-
-Montar e enviar prompt para o modelo via API (HL_TOKEN);
-
-Receber JSON com classificação e sugestão de resposta;
-
-Persistir e retornar o resultado ao frontend.
+Vite will display the URL (e.g., http://localhost:5173) — open it in your browser.
 
 ---
 
-# Endpoints importantes
+## Usage Flow (Summary)
+Access the frontend.
+(Optional) Log in with the created superuser.
+Paste the email text or upload a .txt / .pdf file.
+Click Analyze — the backend will:
 
-POST /api/token/ — obter JWT (enviar { "username": "...", "password": "..." })
+Extract and preprocess the text (removing stopwords, cleaning, simple stemming);
+Build and send a prompt to the model via API (HL_TOKEN);
+Receive a JSON response with classification and response suggestion;
+Persist and return the result to the frontend.
 
-GET/POST /api/v1/emails/ — criar e listar análises de e-mail (Authorization: Bearer <token>)
+### Key Endpoints
+- POST /api/token/ (obtain JWT token)
+- GET/POST /api/v1/emails/ (create and list email analyses)
 
-**Exemplo (curl — enviar texto)**
+### Example (curl — send text)
 curl -X POST http://localhost:8000/api/v1/emails/ \
   -H "Authorization: Bearer <ACCESS_TOKEN>" \
   -H "Content-Type: application/json" \
-  -d '{"original_text": "Olá, preciso de uma atualização sobre o meu processo."}'
-
-**Exemplo (curl — upload de arquivo)**
+  -d '{"original_text": "Hello, I need an update on my process."}'
+  
+### Example (curl — file upload)
 curl -X POST http://localhost:8000/api/v1/emails/ \
   -H "Authorization: Bearer <ACCESS_TOKEN>" \
   -F "upload=true" \
-  -F "file=@/caminho/para/email.txt"
+  -F "file=@/path/to/email.txt"
 
 ---
 
-# Como a IA está integrada (visão técnica)
+## How AI is Integrated (Technical Overview)
 
-Pré-processamento: limpeza do texto, remoção de pontuação, stopwords e stemming simples.
+Preprocessing: Text cleaning, removal of punctuation, stopwords, and simple stemming.
+Prompt + API Call: Constructs a prompt that requests the model to return a JSON response with specific fields (classification, priority, ia_suggestion_text, original_text).
+Validation: The backend validates that the returned JSON contains the expected fields before persisting.
 
-Prompt + Chamada de API: monta prompt que solicita ao modelo uma resposta JSON com campos específicos (classification, priority, ia_suggestion_text, original_text).
+Mapping:
+classification: 1 = Productive, 2 = Non-Productive
+priority: 1 = High, 2 = Medium, 3 = Low, 0 = N/A
+ia_suggestion_text: Suggested response text
 
-Validação: o backend valida se o JSON retornado contém os campos esperados antes de persistir.
+---
 
-Mapeamento:
+## Known Limitations & Suggested Improvements
 
-classification: 1 = Produtivo, 2 = Improdutivo
+- Current preprocessing is basic — migrating to spaCy or NLTK would improve quality.
+- Implement a processing queue (Celery + RabbitMQ/Redis) for high volume without blocking requests.
+- Add unit/integration tests for the pipeline (NLP, AI integration, uploads).
 
-priority: 1 = Alta, 2 = Média, 3 = Baixa, 0 = N/A
+---
 
-ia_suggestion_text: texto da resposta sugerida
+Developed by **Álvaro de Sena Bernucci – Fullstack Developer**
 
-# Limitações conhecidas & melhorias sugeridas
-
-Pré-processamento atual é simples — migrar para spaCy ou NLTK melhora a qualidade.
-
-Tratar respostas mal-formadas / timeouts da API com retry, circuit breaker e logs.
-
-Implementar fila de processamento (Celery + RabbitMQ/Redis) para alto volume sem bloquear requests.
-
-Adicionar testes unitários/integrados para o pipeline (NLP, integração IA, upload).
-
-Harden de segurança (CORS, rate-limiting, não usar DEBUG=True em produção).
-
-
-
-
-Developed by Álvaro de Sena Bernucci – Fullstack Developer
 LinkedIn: https://www.linkedin.com/in/alvarobernucci/
+
+---
