@@ -15,10 +15,7 @@ services:
   - type: web
     name: smartmail-frontend
     env: static
-    plan: starter
     branch: master
-    rootDir: ui 
+    rootDir: ui
     buildCommand: npm install && npm run build
-
-
 
