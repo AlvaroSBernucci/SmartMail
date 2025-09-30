@@ -1,5 +1,3 @@
-# render.yaml
-
 services:
   - type: web
     name: smartmail-api
@@ -7,14 +5,12 @@ services:
     plan: free
     branch: master
     rootDir: api
-    buildCommand: pip install -r requirements.txt && python manage.py migrate
+    buildCommand: pip install -r requirements.txt && python manage.py migrate && python initial_setup.py
     startCommand: gunicorn core.wsgi:application --bind 0.0.0.0:$PORT
-
 
   - type: web
     name: smartmail-frontend
     env: static
     branch: master
-    rootDir: ui
+    rootDir: src
     buildCommand: npm install && npm run build
-
