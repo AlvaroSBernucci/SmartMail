@@ -11,11 +11,11 @@ services:
     startCommand: gunicorn core.wsgi:application --bind 0.0.0.0:$PORT
     envVars:
     - fromGroup: env
-    
+
   - type: web
     name: smartmail-frontend
     env: static
-    plan: free
+    plan: starter
     branch: master
     rootDir: ui 
     buildCommand: npm install && npm run build
