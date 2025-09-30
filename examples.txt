@@ -1,0 +1,60 @@
+### EMAIL 1 ###
+
+Olá, equipe de suporte.
+
+Poderiam me informar o status do meu pedido de reembolso nº 45213?  
+Enviei todos os documentos solicitados na semana passada e gostaria de saber se já foi processado.
+
+Obrigado!
+
+### EMAIL 2 ###
+
+Bom dia!
+
+Estou tentando acessar minha conta no sistema, mas ao fazer login aparece a mensagem “Erro de autenticação”.  
+Podem me ajudar a resolver esse problema?
+
+Atenciosamente,  
+João Santos
+
+### EMAIL 3 ###
+
+Prezados,
+
+Conforme solicitado, estou encaminhando em anexo a cópia do contrato assinada para dar continuidade ao processo.
+
+Fico no aguardo da confirmação de recebimento.
+
+Cordialmente,  
+Mariana Lima
+
+### EMAIL 4 ###
+
+Olá, equipe!
+
+Quero apenas agradecer pela agilidade no atendimento e pelo suporte prestado.  
+Parabéns pelo excelente trabalho! 
+
+Abraços,  
+Carlos
+
+### EMAIL 5 ###
+
+Queridos parceiros,
+
+Desejo a todos vocês um Feliz Natal e um próspero Ano Novo!  
+Que 2025 seja um ano de muito sucesso e conquistas!
+
+Com carinho,  
+Equipe Comercial
+
+### EMAIL 6 ###
+
+Olá,
+
+Vocês poderiam me informar qual a cor da logomarca da empresa?  
+Apenas por curiosidade mesmo. 😊
+
+Atenciosamente,  
+Lívia
+
