@@ -1,6 +1,5 @@
 # render.yaml
 
-# Serviço do back-end
 services:
   - type: web
     name: smartmail-api
@@ -14,8 +13,6 @@ services:
       - key: ALLOWED_HOSTS
       - key: SECRET_KEY
       - key: HL_TOKEN
-
-# Serviço do front-end
   - type: web
     name: smartmail-frontend
     env: static
@@ -25,9 +22,4 @@ services:
     buildCommand: npm install && npm run build
 
 
-databases:
-  - name: smartmail-db
-    databaseName: smartmail
-    user: admin
-    password: senha123
-    plan: free
+
