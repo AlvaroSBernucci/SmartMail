@@ -75,6 +75,14 @@ Vite will display the URL (e.g., http://localhost:5173) — open it in your brow
 
 ---
 
+## Deployed link
+https://smartmail-frontend.onrender.com/login
+
+**username: admin**
+**password: admin**
+
+---
+
 ## Usage Flow (Summary)
 Access the frontend.
 (Optional) Log in with the created superuser.
