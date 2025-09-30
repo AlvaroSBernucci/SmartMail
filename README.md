@@ -76,7 +76,7 @@ Vite will display the URL (e.g., http://localhost:5173) — open it in your brow
 ---
 
 ## Deployed link
-https://smartmail-frontend.onrender.com/login
+https://smartmail-frontend.onrender.com
 
 **username: admin**
 **password: admin**
